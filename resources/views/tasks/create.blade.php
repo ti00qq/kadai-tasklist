@@ -4,16 +4,24 @@
 
     <h1>タスク新規作成ページ</h1>
 
-    {!! Form::model($task, ['route' => 'tasks.store']) !!}
+    <div class="row">
+        <div class="col-xs-6">
+            {!! Form::model($task, ['route' => 'tasks.store']) !!}
 
-        {!! Form::label('content', 'タスク:') !!}
-        {!! Form::text('content') !!}
+                <div class="form-group">
+                    {!! Form::label('content', 'タイトル:') !!}
+                    {!! Form::text('content', null, ['class' => 'form-control']) !!}
+                </div>
 
-        {!! Form::label('status', 'ステータス:') !!}
-        {!! Form::text('status') !!}
-        
-        {!! Form::submit('作成') !!}
+                <div class="form-group">
+                    {!! Form::label('status', 'メッセージ:') !!}
+                    {!! Form::text('status', null, ['class' => 'form-control']) !!}
+                </div>
 
-    {!! Form::close() !!}
+                {!! Form::submit('追加', ['class' => 'btn btn-primary']) !!}
+
+            {!! Form::close() !!}
+        </div>
+    </div>
 
 @endsection
