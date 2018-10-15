@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="form-group">
-                    {!! Form::label('status', 'メッセージ:') !!}
+                    {!! Form::label('status', 'ステータス:') !!}
                     {!! Form::text('status', null, ['class' => 'form-control']) !!}
                 </div>
 
