@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\task;
+use App\User; // 追加
 
 class TasksController extends Controller
 {
@@ -15,11 +16,17 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = task::all();
-
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+        if (\Auth::check()) {
+            $login_id = \Auth::id(); 
+            $tasks = task::where('user_id',$login_id)->get();
+    
+            return view('tasks.index', [
+                'tasks' => $tasks,
+            ]);
+        }else{
+            return view('welcome');
+            
+        }
     }
 
     /**
@@ -52,6 +59,7 @@ class TasksController extends Controller
         $task = new task;
         $task->status = $request->status;    // 追加
         $task->content = $request->content;
+        $task->user_id = $request->user()->id;
         $task->save();
 
         return redirect('/');
@@ -66,10 +74,15 @@ class TasksController extends Controller
     public function show($id)
     {
         $task = task::find($id);
-
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+        $login_id = \Auth::id();
+        
+        if($task->user_id == $login_id){
+            return view('tasks.show', [
+                'task' => $task,
+            ]);
+        }else{
+            return redirect('/');
+        }
     }
 
     /**
@@ -81,10 +94,15 @@ class TasksController extends Controller
     public function edit($id)
     {
         $task = task::find($id);
-
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        $login_id = \Auth::id();
+        
+        if($task->user_id == $login_id){
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);
+        }else{
+            return redirect('/');
+        }
     }
 
     /**
@@ -96,17 +114,23 @@ class TasksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'status' => 'required|max:10',   // 追加
-            'content' => 'required|max:191',
-        ]);
-        
         $task = task::find($id);
-        $task->status = $request->status;    // 追加
-        $task->content = $request->content;
-        $task->save();
-
-        return redirect('/');
+        $login_id = \Auth::id();
+        
+        if($task->user_id == $login_id){
+            $this->validate($request, [
+                'status' => 'required|max:10',   // 追加
+                'content' => 'required|max:191',
+            ]);
+            
+            $task = task::find($id);
+            $task->status = $request->status;    // 追加
+            $task->content = $request->content;
+            $task->save();
+            return redirect('/');
+        }else{
+            return redirect('/');
+        }
     }
 
     /**
@@ -118,8 +142,14 @@ class TasksController extends Controller
     public function destroy($id)
     {
         $task = task::find($id);
-        $task->delete();
-
-        return redirect('/');
+        $login_id = \Auth::id();
+        
+        if($task->user_id == $login_id){
+            $task = task::find($id);
+            $task->delete();
+            return redirect('/');
+        }else{
+            return redirect('/');
+        }
     }
 }
